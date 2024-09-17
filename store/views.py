@@ -20,10 +20,7 @@ def product_details(req,id):
         "products": products,
     })
 
-def cart(req):
-    return render(req, 'cart.html', {  # Direct reference to 'home.html'
-       
-    })
+
 
 def login_user(request):
     if request.method == "POST":
