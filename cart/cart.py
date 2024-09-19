@@ -1,3 +1,6 @@
+from store.models import Product
+
+
 class Cart:
     def __init__(self,req): 
         self.session = req.session
@@ -25,3 +28,20 @@ class Cart:
 
     def __len__(self):
         return len(self.cart)
+    
+    def cart_get(self):
+        # Get the product IDs from the cart
+        product_ids = self.cart.keys()
+        
+        # Retrieve the products using the correct filter: id__in
+        products = Product.objects.filter(id__in=product_ids)
+
+        return products
+    
+    def cart_delete(self, product_id):
+        # Ensure product_id is a string
+        product_id = str(product_id)
+        if product_id in self.cart:
+            del self.cart[product_id]  # Remove item from cart
+            self.session.modified = True
+

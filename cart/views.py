@@ -5,18 +5,24 @@ from django.http import JsonResponse
 
 # Create your views here.
 def cart_get(req):
-    return render(req, 'cart.html', {  # Direct reference to 'home.html'
-       
-    })
+
+    cart = Cart(req)  # Pass the request to the Cart class
+    cart_items = cart.cart_get  # Retrieve all items from the cart
+    return render(req, 'cart.html', {'cart_items': cart_items})
+  
 
 def cart_update(req):
     return render(req, 'cart.html', {  # Direct reference to 'home.html'
        
     })
 
-def cart_delete(req):
-    return render(req, 'cart.html', {  # Direct reference to 'home.html'
-       
+def cart_delete(req, id):
+    cart = Cart(req)
+    cart.cart_delete(id)
+    cart_items = cart.cart_get()  # Call cart_get() to fetch updated cart items
+
+    return render(req, 'cart.html', {  # Use correct template name 'cart.html'
+        'cart_items': cart_items
     })
 
 def cart_add(req):
