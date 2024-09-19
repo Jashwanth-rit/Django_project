@@ -23,7 +23,7 @@
                 <p class="lead">{{product.description}}</p>
                 <div class="d-flex">
                     <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
-                    <button class="btn btn-outline-dark flex-shrink-0" type="button">
+            <button class="btn btn-outline-dark flex-shrink-0" type="button" value="{{prodcut.id}}"  id="add-cart">
                         <i class="bi-cart-fill me-1"></i>
                         Add to cart
                     </button>
@@ -72,6 +72,31 @@
         </div>
     </div>
 </section>
+<script>
+    $(document).on("click", '#add-cart', function(e) {
+        e.preventDefault();
+
+        // Fetch the product ID from a data attribute or input field
+        const productId = $(this).data('product-id'); // Assuming you're using a data attribute
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart_add" %}', // Django template tag to construct the URL
+            data: {
+                product_id: productId,
+                csrfmiddlewaretoken: '{{ csrf_token }}', // Correct CSRF token
+                action: 'post'
+            },
+            success: function(response) {
+                console.log("Product added to cart:", response);
+            },
+            error: function(xhr, errmsg, err) {
+                console.error("Error occurred:", errmsg, err);
+            }
+        });
+    });
+</script>
+
        
         {% endblock %}
       

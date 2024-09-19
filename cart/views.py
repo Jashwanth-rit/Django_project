@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
+from .cart import Cart
+from store.models import Product
+from django.http import JsonResponse
 
 # Create your views here.
 def cart_get(req):
@@ -17,6 +20,18 @@ def cart_delete(req):
     })
 
 def cart_add(req):
+# Get the Cart
+    cart  = Cart(req)
+
+    # Post
+
+    if req.POST.get('action') == 'post':
+        product_id = int(req.POST.get('product_id'))
+        product  = get_object_or_404(Product,id = product_id)
+        cart.add(product  = product)
+
+        response = JsonResponse({'product Name:':product.name})
+        return response
     return render(req, 'cart.html', {  # Direct reference to 'home.html'
        
     })
