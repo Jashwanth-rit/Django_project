@@ -11,7 +11,15 @@ class Cart:
             cart = self.session['session_key'] = {}
 
         self.cart = cart
-    
+
+
+    def update(self, product, quantity=1):
+        product_id = str(product.id)
+        print("update:",product_id,quantity);
+        self.cart[product_id]['quantity'] = quantity
+        self.session.modified = True
+
+
     def add(self, product, quantity=1):
         """
         Add a product to the cart or update its quantity.

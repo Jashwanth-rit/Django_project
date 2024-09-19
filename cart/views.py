@@ -19,9 +19,25 @@ def cart_get(req):
   
 
 def cart_update(req):
-    return render(req, 'cart.html', {  # Direct reference to 'home.html'
-       
-    })
+    cart = Cart(req)
+
+    if req.POST.get('action') == 'post':
+        product_id = int(req.POST.get('product_id'))
+        quantity = int(req.POST.get('quantity'))  # Capture the quantity from the POST data
+
+        product = get_object_or_404(Product, id=product_id)
+        
+        cart.update(product=product, quantity=quantity)  # Add product with quantity
+
+        cart_number = cart.__len__()  # Get the number of items in the cart
+
+        # Return response as JSON
+        response = JsonResponse({'Cart_number': cart_number})
+        return response
+    return render(req, 'cart.html')
+
+    
+    
 
 def cart_delete(req, id):
     cart = Cart(req)
