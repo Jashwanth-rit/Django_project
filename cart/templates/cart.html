@@ -24,6 +24,7 @@
                             <!-- Product details-->
                             <div class="flex-grow-1">
                                 <h5 class="fw-bolder">{{ item.name }}</h5>
+                                <h5 class="fw-bolder">{{ item.id }}</h5>
                                 <p class="text-muted mb-2">{{ item.category }}</p>
                                 {% if item.is_sale %}
                                     <span class="text-muted text-decoration-line-through">${{ item.price }}</span>
@@ -31,12 +32,26 @@
                                 {% else %}
                                     <span>${{ item.price }}</span>
                                 {% endif %}
+                                <!-- Quantity selection -->
+                                <select class="form-select text-center me-3" id="quantitySelect{{ item.id }}" style="max-width: 5rem">
+                                    {% for key, value in quantity.items %}
+                                        {% if key == item.id|slugify %}
+                                            <option selected>{{ value }}</option>  <!-- Pre-select the quantity -->
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    <!-- Add the other range options -->
+                                    {% for i in quantity_range %}
+                                        <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                                
                                 <p class="card-text mt-2">{{ item.description }}</p>
                             </div>
                             <!-- Remove and Buy buttons -->
                             <div class="d-flex flex-column">
                                 <a href="{% url 'cart_delete' item.id %}" class="btn btn-danger btn-sm mb-2">Remove</a>
-                                <a href="" class="btn btn-primary btn-sm">Buy</a>
+                                <a href="#" class="btn btn-primary btn-sm">Buy</a>
                             </div>
                         </div>
                     </div>

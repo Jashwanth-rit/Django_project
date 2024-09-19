@@ -1,30 +1,36 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
-        
+<!-- Product Details Section -->
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row gx-4 gx-lg-5 align-items-center">
-            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{product.image.url}}" alt="{{product.name}}" /></div>
             <div class="col-md-6">
-                <div class="small mb-1">{{product.name}}</div>
-                <div class="small mb-1">{{product.id}}</div>
-                <h1 class="display-5 fw-bolder">{{product.category}}</h1>
+                <img class="card-img-top mb-5 mb-md-0" src="{{ product.image.url }}" alt="{{ product.name }}" />
+            </div>
+            <div class="col-md-6">
+                <div class="small mb-1">{{ product.name }}</div>
+                <div class="small mb-1">{{ product.id }}</div>
+                <h1 class="display-5 fw-bolder">{{ product.category }}</h1>
                 <div class="fs-5 mb-5">
-                    
                     {% if product.is_sale %}
-                    <span class="text-decoration-line-through">{{product.price}}</span>
-                    <span>{{product.sale_price}}</span>
-                    {%else%}
-                    <span>{{product.price}}</span>
-                    {%endif%}
-
-                    
+                        <span class="text-decoration-line-through">{{ product.price }}</span>
+                        <span>{{ product.sale_price }}</span>
+                    {% else %}
+                        <span>{{ product.price }}</span>
+                    {% endif %}
                 </div>
-                <p class="lead">{{product.description}}</p>
+                <p class="lead">{{ product.description }}</p>
                 <div class="d-flex">
-                    <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
-            <button class="btn btn-outline-dark flex-shrink-0" type="button" value="{{product.id}}"  id="add-cart">
+                    <!-- Quantity Select Dropdown -->
+                    <select class="form-select text-center me-3" id="quantitySelect" style="max-width: 5rem">
+                        {% for i in quantity_range %}
+                            <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <button class="btn btn-outline-dark flex-shrink-0" type="button" value="{{ product.id }}" id="add-cart">
                         <i class="bi-cart-fill me-1"></i>
                         Add to cart
                     </button>
@@ -33,66 +39,58 @@
         </div>
     </div>
 </section>
-<!-- Related items section-->
+
+<!-- Related Items Section -->
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-
-{%for product in products %}
-
+            {% for product in products %}
             <div class="col mb-5">
                 <div class="card h-100">
-                    <!-- Product image-->
                     {% if product.is_sale %}
-                    <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem;font-size: large;">Sale</div>
-                    {%endif%}
-                   
-                    <img class="card-img-top" src="{{product.image.url}}" alt="{{product.name}}" />
-                    <!-- Product details-->
+                    <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem; font-size: large;">Sale</div>
+                    {% endif %}
+                    <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" />
                     <div class="card-body p-4">
                         <div class="text-center">
-                            <!-- Product name-->
-                            <h5 class="fw-bolder">{{product.name}}</h5>
-                            <!-- Product price-->
-                         
-
-                           <strike> ${{product.price}}</strike> &nbsp; ${{product.sale_price}}
+                            <h5 class="fw-bolder">{{ product.name }}</h5>
+                            <strike> ${{ product.price }}</strike> &nbsp; ${{ product.sale_price }}
                             <br>
-                            <span>{{product.description}}</span>
+                            <span>{{ product.description }}</span>
                         </div>
                     </div>
-                    <!-- Product actions-->
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="{% url  'product'  product.id %}">View Product</a></div>
+                        <div class="text-center">
+                            <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View Product</a>
+                        </div>
                     </div>
                 </div>
             </div>
-
-{%endfor%}
-
-        
+            {% endfor %}
         </div>
     </div>
 </section>
+
+<!-- AJAX script to handle adding to cart -->
 <script>
     $(document).on("click", '#add-cart', function(e) {
         e.preventDefault();
 
-        // Fetch the product ID from a data attribute or input field
-        const productId = $('#add-cart').val(); // Assuming you're using a data attribute
+        const productId = $('#add-cart').val();
+        const quantity = $('#quantitySelect').val();  // Get selected quantity
 
         $.ajax({
             type: 'POST',
-            url: '{% url "cart_add" %}', // Django template tag to construct the URL
+            url: '{% url "cart_add" %}',
             data: {
                 product_id: productId,
-                csrfmiddlewaretoken: '{{ csrf_token }}', // Correct CSRF token
+                quantity: quantity,  // Pass the quantity to the backend
+                csrfmiddlewaretoken: '{{ csrf_token }}',
                 action: 'post'
             },
             success: function(json) {
-                
-                console.log("cart_num",json.Cart_number)
-                document.getElementById("cart_num").textContent = json.Cart_number
+                console.log("cart_num", json.Cart_number);
+                document.getElementById("cart_num").textContent = json.Cart_number;
             },
             error: function(xhr, errmsg, err) {
                 console.error("Error occurred:", errmsg, err);
@@ -101,9 +99,4 @@
     });
 </script>
 
-       
-        {% endblock %}
-      
-
-
-        
+{% endblock %}

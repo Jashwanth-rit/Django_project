@@ -6,6 +6,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .forms import RegisterUserForm
 from .models import Product
+from django import template
+
+
 
 def home(req):
     products = Product.objects.all()
@@ -15,9 +18,11 @@ def home(req):
 def product_details(req,id):
     product = Product.objects.get(pk = id)
     products = Product.objects.all()
+    quantity_range = range(1, 11)
     return render(req, 'product.html', {  # Direct reference to 'home.html'
         "product": product,
         "products": products,
+        'quantity_range': quantity_range
     })
 
 

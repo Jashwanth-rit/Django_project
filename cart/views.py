@@ -3,12 +3,19 @@ from .cart import Cart
 from store.models import Product
 from django.http import JsonResponse
 
-# Create your views here.
 def cart_get(req):
+    cart = Cart(req)
+    cart_items = cart.cart_get()  # Call the method
+    quantity = cart.get_quants()  # Get product quantities
+    quantity_range = range(1, 11)  
+    print("quantity",quantity)# Quantity selection range (1 to 10)
 
-    cart = Cart(req)  # Pass the request to the Cart class
-    cart_items = cart.cart_get  # Retrieve all items from the cart
-    return render(req, 'cart.html', {'cart_items': cart_items})
+    return render(req, 'cart.html', {
+        'cart_items': cart_items,
+        'quantity_range': quantity_range,
+        'quantity': quantity,  # Pass quantities to the template
+    })
+
   
 
 def cart_update(req):
@@ -26,22 +33,21 @@ def cart_delete(req, id):
     })
 
 def cart_add(req):
-# Get the Cart
-    cart  = Cart(req)
-
-    # Post
+    # Get the Cart instance
+    cart = Cart(req)
 
     if req.POST.get('action') == 'post':
         product_id = int(req.POST.get('product_id'))
-        product  = get_object_or_404(Product,id = product_id)
-        cart.add(product  = product)
+        quantity = int(req.POST.get('quantity'))  # Capture the quantity from the POST data
 
-        cart_number = cart.__len__()
+        product = get_object_or_404(Product, id=product_id)
+        cart.add(product=product, quantity=quantity)  # Add product with quantity
 
-        # response = JsonResponse({'product Name:':product.name})
-        response = JsonResponse({'Cart_number':cart_number})
+        cart_number = cart.__len__()  # Get the number of items in the cart
+
+        # Return response as JSON
+        response = JsonResponse({'Cart_number': cart_number})
         return response
-    return render(req, 'cart.html', {  # Direct reference to 'home.html'
-       
-    })
+    return render(req, 'cart.html')
+
 
