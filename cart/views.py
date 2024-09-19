@@ -30,7 +30,10 @@ def cart_add(req):
         product  = get_object_or_404(Product,id = product_id)
         cart.add(product  = product)
 
-        response = JsonResponse({'product Name:':product.name})
+        cart_number = cart.__len__()
+
+        # response = JsonResponse({'product Name:':product.name})
+        response = JsonResponse({'Cart_number':cart_number})
         return response
     return render(req, 'cart.html', {  # Direct reference to 'home.html'
        

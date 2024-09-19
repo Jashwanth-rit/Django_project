@@ -8,6 +8,7 @@
             <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{{product.image.url}}" alt="{{product.name}}" /></div>
             <div class="col-md-6">
                 <div class="small mb-1">{{product.name}}</div>
+                <div class="small mb-1">{{product.id}}</div>
                 <h1 class="display-5 fw-bolder">{{product.category}}</h1>
                 <div class="fs-5 mb-5">
                     
@@ -23,7 +24,7 @@
                 <p class="lead">{{product.description}}</p>
                 <div class="d-flex">
                     <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
-            <button class="btn btn-outline-dark flex-shrink-0" type="button" value="{{prodcut.id}}"  id="add-cart">
+            <button class="btn btn-outline-dark flex-shrink-0" type="button" value="{{product.id}}"  id="add-cart">
                         <i class="bi-cart-fill me-1"></i>
                         Add to cart
                     </button>
@@ -77,7 +78,7 @@
         e.preventDefault();
 
         // Fetch the product ID from a data attribute or input field
-        const productId = $(this).data('product-id'); // Assuming you're using a data attribute
+        const productId = $('#add-cart').val(); // Assuming you're using a data attribute
 
         $.ajax({
             type: 'POST',
@@ -87,8 +88,10 @@
                 csrfmiddlewaretoken: '{{ csrf_token }}', // Correct CSRF token
                 action: 'post'
             },
-            success: function(response) {
-                console.log("Product added to cart:", response);
+            success: function(json) {
+                
+                console.log("cart_num",json.Cart_number)
+                document.getElementById("cart_num").textContent = json.Cart_number
             },
             error: function(xhr, errmsg, err) {
                 console.error("Error occurred:", errmsg, err);
