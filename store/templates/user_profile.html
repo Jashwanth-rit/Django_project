@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1 class="text-center mb-4">User-Profile</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+    
+        {% if form.errors %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong> There is an error in your registration, try again!</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+        {% endif %}
+
+  <form action="{%url 'user_profile' %}" method="POST">
+    {% csrf_token %}
+  {{user_form.as_p}}
+    <input type="submit" value="Update" class="btn btn-secondary btn-block mt-3">
+   
+  
+   
+  </form>
+ 
+
+ 
+    
+
+     
+    </div>
+  </div>
+</div>
+{% endblock %}

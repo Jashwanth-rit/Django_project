@@ -3,10 +3,13 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django import forms
-from .forms import RegisterUserForm
+from .forms import RegisterUserForm, UpdateUserForm
 from .models import Product
 from django import template
+
+
 
 
 
@@ -55,7 +58,23 @@ def regist_user(request):
        form  = RegisterUserForm()
     return render(request,'register.html',{'form':form})
 
+def user_profile(request):
+    
+    if request.user.is_authenticated:
+       user = User.objects.get(id = request.user.id)
+       form = UpdateUserForm(request.POST or None, instance = user)
+       if form.is_valid():
+          form.save()
+          
+          login(request,user)
+          return redirect('home')
+       return render(request,'user_profile.html',{'user_form':form})
+    else:
+       return render(request,'login.html',{})
+       
 
+    
+    
 
 def logout_user(request):
     logout(request);
