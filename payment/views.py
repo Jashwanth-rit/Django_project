@@ -19,6 +19,22 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
 from .models import Order, OrderItem  # Import the Order and OrderItem models
+# views.py
+from django.shortcuts import render
+from django.http import HttpResponse
+from .forms import PaymentForm
+
+def payment_section(request):
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            # Process payment logic here
+            return HttpResponse("Payment successful!")  # Redirect or success page
+    else:
+        form = PaymentForm()
+
+    return render(request, 'payment/payment_section.html', {'form': form})
+
 
 @login_required
 def checkout_view(req):
@@ -68,7 +84,7 @@ def checkout_view(req):
             cart.clear()
 
             # Redirect to success page
-            return redirect('payment_success')  # Redirect to payment or success page after form submission
+            return redirect('payment_section')  # Redirect to payment or success page after form submission
     else:
         form = ShippingAddressForm(instance=shipping_address)  # Pass the existing address to the form
 
@@ -126,7 +142,7 @@ def manage_shipping_address(request):
             address = form.save(commit=False)
             address.user = request.user  # Set the user
             address.save()
-            return redirect('payment/payment_success')  # Redirect to success page after saving
+            return redirect('shipping_address')  # Redirect to success page after saving
     else:
         # Prepopulate the form with the user's existing data if available
         form = ShippingAddressForm(instance=shipping_address)
