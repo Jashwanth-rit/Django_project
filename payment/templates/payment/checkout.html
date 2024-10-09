@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Header -->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Checkout</h1>
+                <p class="lead fw-normal text-white-50 mb-0">Complete your purchase and shipping details.</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Shopping Cart Section -->
+    <section class="py-5">
+        <div class="container px-4 px-lg-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    {% if cart_items %}
+                        {% for item in cart_items %}
+                        <div class="col-12 mb-4">
+                            <div class="card d-flex flex-row align-items-center p-3 shadow-sm" style="border-radius: 10px;">
+                                <!-- Product image-->
+                                <img class="img-fluid rounded" src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 150px; height: auto; margin-right: 20px; object-fit: cover;">
+                                
+                                <!-- Product details-->
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bolder">{{ item.name }}</h5>
+                                    <p class="text-muted mb-2">{{ item.category }}</p>
+                                    {% if item.is_sale %}
+                                        <span class="text-muted text-decoration-line-through">${{ item.price }}</span>
+                                        <span class="text-danger ms-2">${{ item.sale_price }}</span>
+                                    {% else %}
+                                        <span class="fw-bold">${{ item.price }}</span>
+                                    {% endif %}
+                                    
+                                    <!-- Quantity selection -->
+                                    <div class="mt-3">
+                                        <label for="quantitySelect{{ item.id }}" class="form-label">Quantity:</label>
+                                        <select class="form-select text-center me-3" id="quantitySelect{{ item.id }}" style="max-width: 5rem; display: inline-block;">
+                                            {% for key, value in quantity.items %}
+                                                {% if key == item.id|stringformat:"s" %}
+                                                    <option selected>{{ value }}</option>  <!-- Pre-select the quantity -->
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% for i in quantity_range %}
+                                                <option value="{{ i }}">{{ i }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <p class="card-text mt-3">{{ item.description }}</p>
+                                </div>
+                                
+                                <!-- Remove and Buy buttons -->
+                                <div class="d-flex flex-column align-items-end">
+                                    <a href="{% url 'cart_delete' item.id %}" class="btn btn-danger btn-sm mb-2">Remove</a>
+                                    <button class="btn btn-outline-dark flex-shrink-0 mb-2" type="button" data-index="{{ item.id }}" id="update-cart{{ item.id }}">
+                                        Update
+                                    </button>
+                                    <a href="#" class="btn btn-primary btn-sm">Buy</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <!-- Display the overall cart total -->
+                        <div class="col-12 mt-4">
+                            <h4 class="text-end">Cart Total: <strong>${{ cart_total }}</strong></h4>
+                        </div>
+                    {% else %}
+                        <div class="col-12">
+                            <p class="text-center fs-4">Your cart is empty.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Shipping Form Section -->
+                <div class="col-lg-4">
+                    <h4>Shipping Details</h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-success mt-3">Submit Shipping Details</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ajax Update Script -->
+    <script>
+        $(document).on("click", '[id^=update-cart]', function(e) {
+            e.preventDefault();
+
+            var productId = $(this).data('index');
+            var quantity = $('#quantitySelect' + productId).val();  // Get selected quantity based on unique id
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "cart_update" %}',
+                data: {
+                    product_id: productId,
+                    quantity: quantity,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json) {
+                    location.reload();
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error("Error occurred:", errmsg, err);
+                }
+            });
+        });
+    </script>
+{% endblock %}

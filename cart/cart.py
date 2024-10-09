@@ -3,6 +3,7 @@ from store.models import Product
 class Cart:
     def __init__(self, req): 
         self.session = req.session
+        self.req = req
 
         # Get the current session cart
         cart = self.session.get('session_key')
@@ -18,6 +19,13 @@ class Cart:
         print("update:",product_id,quantity);
         self.cart[product_id]['quantity'] = quantity
         self.session.modified = True
+
+    def clear(self):
+        """Clears all items from the cart."""
+        session = self.req.session
+        if 'cart' in session:
+            del session['cart']  # Remove the cart from session
+            session.modified = True  # Mark sessio
 
 
     def add(self, product, quantity=1):

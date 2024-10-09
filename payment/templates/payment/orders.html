@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="my-4">My Orders</h1>
+
+        {% if orders %}
+            <div class="list-group">
+                {% for order in orders %}
+                    <div class="list-group-item mb-3">
+                        <h5>Order ID: {{ order.id }}</h5>
+                        <p>Date: {{ order.date_ordered }}</p>
+                        <p>Status: {% if order.complete %}Complete{% else %}Incomplete{% endif %}</p>
+                        <p>Transaction ID: {{ order.transaction_id }}</p>
+
+                        <h6>Items:</h6>
+                        <ul>
+                            {% for item in order.orderitem_set.all %}
+                                <li>{{ item.product.name }} (x{{ item.quantity }}) - ${{ item.get_total }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <p><strong>Total: ${{ order.get_cart_total }}</strong></p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No orders found.</p>
+        {% endif %}
+    </div>
+{% endblock %}
