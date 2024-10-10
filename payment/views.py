@@ -52,6 +52,7 @@ def checkout_view(req):
         shipping_address = None
 
     # Shipping form (auto-filled if an address already exists)
+    # change
     if req.method == 'POST':
         form = ShippingAddressForm(req.POST, instance=shipping_address)  # Pass the existing address, if any
         if form.is_valid():
